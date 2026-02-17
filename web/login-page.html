@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In / Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            user-select: none;
+        }
+
+        .toggle-password:hover {
+            color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .toggle-form p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .toggle-form button {
+            width: auto;
+            padding: 0;
+            background: none;
+            color: #667eea;
+            font-weight: 600;
+            margin-left: 5px;
+            box-shadow: none;
+            cursor: pointer;
+        }
+
+        .toggle-form button:hover {
+            text-decoration: underline;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-section {
+            transition: opacity 0.3s;
+        }
+
+        .password-requirements {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .requirement {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .requirement::before {
+            content: '○';
+            margin-right: 8px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .requirement.met::before {
+            content: '✓';
+            color: #27ae60;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <!-- Sign In Form -->
+            <div id="signInForm" class="form-section">
+                <div class="header">
+                    <h1>Sign In</h1>
+                    <p>Welcome back to your account</p>
+                </div>
+
+                <form id="signInFormElement">
+                    <div class="form-group">
+                        <label for="signInEmail">Email Address</label>
+                        <input type="email" id="signInEmail" name="email" required placeholder="you@example.com">
+                        <div class="error-message" id="signInEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signInPassword">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signInPassword" name="password" required
+                                placeholder="Enter your password">
+                            <span class="toggle-password"
+                                onclick="togglePasswordVisibility('signInPassword')">👁️</span>
+                        </div>
+                        <div class="error-message" id="signInPasswordError"></div>
+                    </div>
+
+                    <button type="submit">Sign In</button>
+                </form>
+
+                <div class="toggle-form">
+                    <p>
+                        Don't have an account?
+                        <button type="button" onclick="switchForm('signUp')">Sign Up</button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signUpForm" class="form-section hidden">
+                <div class="header">
+                    <h1>Create Account</h1>
+                    <p>Join us today and get started</p>
+                </div>
+
+                <form id="signUpFormElement">
+                    <div class="form-group">
+                        <label for="signUpUsername">Username</label>
+                        <input type="text" id="signUpUsername" name="username" required placeholder="Choose a username">
+                        <div class="error-message" id="signUpUsernameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signUpEmail">Email Address</label>
+                        <input type="email" id="signUpEmail" name="email" required placeholder="you@example.com">
+                        <div class="error-message" id="signUpEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signUpPassword">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signUpPassword" name="password" required
+                                placeholder="Create a strong password" onkeyup="checkPasswordRequirements(this.value)">
+                            <span class="toggle-password"
+                                onclick="togglePasswordVisibility('signUpPassword')">👁️</span>
+                        </div>
+                        <div class="password-requirements" id="passwordReqs" style="display: none;">
+                            <div class="requirement" id="req-length">At least 8 characters</div>
+                            <div class="requirement" id="req-uppercase">At least one uppercase letter</div>
+                            <div class="requirement" id="req-lowercase">At least one lowercase letter</div>
+                            <div class="requirement" id="req-number">At least one number</div>
+                        </div>
+                        <div class="error-message" id="signUpPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signUpPasswordRepeat">Confirm Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signUpPasswordRepeat" name="passwordRepeat" required
+                                placeholder="Repeat your password" onchange="validatePasswordMatch()">
+                            <span class="toggle-password"
+                                onclick="togglePasswordVisibility('signUpPasswordRepeat')">👁️</span>
+                        </div>
+                        <div class="error-message" id="signUpPasswordRepeatError"></div>
+                    </div>
+
+                    <button type="submit">Sign Up</button>
+                </form>
+
+                <div class="toggle-form">
+                    <p>
+                        Already have an account?
+                        <button type="button" onclick="switchForm('signIn')">Sign In</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchForm(form) {
+            const signInForm = document.getElementById('signInForm');
+            const signUpForm = document.getElementById('signUpForm');
+
+            if (form === 'signUp') {
+                signInForm.classList.add('hidden');
+                signUpForm.classList.remove('hidden');
+                clearFormErrors();
+            } else {
+                signUpForm.classList.add('hidden');
+                signInForm.classList.remove('hidden');
+                clearFormErrors();
+            }
+        }
+
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+        }
+
+        function clearFormErrors() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach(msg => {
+                msg.textContent = '';
+                msg.style.display = 'none';
+            });
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        function validatePasswordMatch() {
+            const password = document.getElementById('signUpPassword').value;
+            const passwordRepeat = document.getElementById('signUpPasswordRepeat').value;
+
+            if (password !== passwordRepeat) {
+                showError('signUpPasswordRepeatError', 'Passwords do not match');
+                return false;
+            } else {
+                document.getElementById('signUpPasswordRepeatError').style.display = 'none';
+                return true;
+            }
+        }
+
+        function checkPasswordRequirements(password) {
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password)
+            };
+
+            if (password.length > 0) {
+                document.getElementById('passwordReqs').style.display = 'block';
+            } else {
+                document.getElementById('passwordReqs').style.display = 'none';
+            }
+
+            updateRequirementVisual('req-length', requirements.length);
+            updateRequirementVisual('req-uppercase', requirements.uppercase);
+            updateRequirementVisual('req-lowercase', requirements.lowercase);
+            updateRequirementVisual('req-number', requirements.number);
+
+            return Object.values(requirements).every(req => req === true);
+        }
+
+        function updateRequirementVisual(elementId, isMet) {
+            const element = document.getElementById(elementId);
+            if (isMet) {
+                element.classList.add('met');
+            } else {
+                element.classList.remove('met');
+            }
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Sign In Form Handler
+        document.getElementById('signInFormElement').addEventListener('submit', function (e) {
+            e.preventDefault();
+            clearFormErrors();
+
+            const email = document.getElementById('signInEmail').value.trim();
+            const password = document.getElementById('signInPassword').value;
+
+            let isValid = true;
+
+            if (!email) {
+                showError('signInEmailError', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('signInEmailError', 'Please enter a valid email');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('signInPasswordError', 'Password is required');
+                isValid = false;
+            }
+
+            if (isValid) {
+                console.log('Sign In Data:', { email, password });
+                alert('Sign in submitted successfully!\nCheck console for details.');
+                // Here you would typically send the data to your backend
+            }
+        });
+
+        // Sign Up Form Handler
+        document.getElementById('signUpFormElement').addEventListener('submit', function (e) {
+            e.preventDefault();
+            clearFormErrors();
+
+            const username = document.getElementById('signUpUsername').value.trim();
+            const email = document.getElementById('signUpEmail').value.trim();
+            const password = document.getElementById('signUpPassword').value;
+            const passwordRepeat = document.getElementById('signUpPasswordRepeat').value;
+
+            let isValid = true;
+
+            if (!username) {
+                showError('signUpUsernameError', 'Username is required');
+                isValid = false;
+            } else if (username.length < 3) {
+                showError('signUpUsernameError', 'Username must be at least 3 characters');
+                isValid = false;
+            }
+
+            if (!email) {
+                showError('signUpEmailError', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('signUpEmailError', 'Please enter a valid email');
+                isValid = false;
+            }
+
+            if (!password) {
+                showError('signUpPasswordError', 'Password is required');
+                isValid = false;
+            } else if (!checkPasswordRequirements(password)) {
+                showError('signUpPasswordError', 'Password does not meet requirements');
+                isValid = false;
+            }
+
+            if (!passwordRepeat) {
+                showError('signUpPasswordRepeatError', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== passwordRepeat) {
+                showError('signUpPasswordRepeatError', 'Passwords do not match');
+                isValid = false;
+            }
+
+            if (isValid) {
+                console.log('Sign Up Data:', { username, email, password });
+                alert('Sign up submitted successfully!\nCheck console for details.');
+                // Here you would typically send the data to your backend
+            }
+        });
+
+        // Focus on password requirements field when typing
+        document.getElementById('signUpPassword').addEventListener('focus', function () {
+            if (this.value.length > 0) {
+                document.getElementById('passwordReqs').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Sender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow: auto;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            border: 2px solid #e0e0e0;
+            color: #333;
+            font-size: 13px;
+            line-height: 1.5;
+            display: none;
+        }
+
+        #response.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Request Sender</h1>
+            <p>Send HTTP requests and view responses</p>
+        </div>
+
+        <form id="requestForm">
+            <div class="form-group">
+                <label for="url">URL For Parsing</label>
+                <input id="url" type="text" placeholder="https://example.com" autocomplete="off">
+            </div>
+            <button type="submit" id="send">Send Request</button>
+        </form>
+
+        <div id="response"></div>
+    </div>
+    <script>
+        const urlInput = document.getElementById('url');
+        const requestForm = document.getElementById('requestForm');
+        const sendBtn = document.getElementById('send');
+        const resp = document.getElementById('response');
+
+        requestForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await sendRequest();
+        });
+
+        async function sendRequest() {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                resp.textContent = 'Please enter a URL for parsing.';
+                resp.classList.add('show');
+                return;
+            }
+
+            sendBtn.disabled = true;
+            resp.textContent = 'Sending...';
+            resp.classList.add('show');
+
+            try {
+                const r = await fetch(url, { mode: 'cors' });
+                const ct = r.headers.get('content-type') || '';
+                let body;
+
+                if (ct.includes('application/json')) {
+                    const j = await r.json();
+                    body = JSON.stringify(j, null, 2);
+                } else {
+                    body = await r.text();
+                }
+
+                resp.textContent = `Status: ${r.status} ${r.statusText}\n\n${body}`;
+            } catch (err) {
+                resp.textContent = 'Error: ' + err.message;
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
