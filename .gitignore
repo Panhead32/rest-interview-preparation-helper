@@ -12,3 +12,4 @@
 *.iml
 node_modules/
 vendor/
+*.db    
