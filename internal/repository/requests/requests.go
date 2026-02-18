@@ -8,9 +8,9 @@ import (
 )
 
 type RequestsRepository interface {
-	Create(ctx context.Context, request *modelRequests.RequestInput) error
+	Create(ctx context.Context, request *modelRequests.RequestInput) (*modelRequests.Request, error)
 	GetByID(ctx context.Context, id int64) (*modelRequests.Request, error)
-	GetByUserID(ctx context.Context, userID int64) ([]*modelRequests.Request, error)
+	GetByUserID(ctx context.Context, userID int64) ([]modelRequests.Request, error)
 	Update(ctx context.Context, request *modelRequests.Request) error
 	Delete(ctx context.Context, id int64) error
 }
@@ -23,7 +23,7 @@ func New(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) Create(ctx context.Context, request *modelRequests.RequestInput) error {
+func (r *Repository) Create(ctx context.Context, request *modelRequests.RequestInput) (*modelRequests.Request, error) {
 	const query = `
 		INSERT INTO requests (
 			request_text,
@@ -34,7 +34,7 @@ func (r *Repository) Create(ctx context.Context, request *modelRequests.RequestI
 	`
 
 	now := utils.NowTimestamp()
-	_, err := r.db.ExecContext(
+	result, err := r.db.ExecContext(
 		ctx,
 		query,
 		request.RequestText,
@@ -42,7 +42,22 @@ func (r *Repository) Create(ctx context.Context, request *modelRequests.RequestI
 		now,
 		now,
 	)
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	return &modelRequests.Request{
+		ID:          id,
+		RequestText: request.RequestText,
+		UserID:      request.UserID,
+		CreatedAt:   now,
+		UpdatedAt:   now,
+	}, nil
 }
 
 func (r *Repository) GetByID(ctx context.Context, id int64) (*modelRequests.Request, error) {
@@ -66,7 +81,7 @@ func (r *Repository) GetByID(ctx context.Context, id int64) (*modelRequests.Requ
 	return request, nil
 }
 
-func (r *Repository) GetByUserID(ctx context.Context, userID int64) ([]*modelRequests.Request, error) {
+func (r *Repository) GetByUserID(ctx context.Context, userID int64) ([]modelRequests.Request, error) {
 	const query = `
 		SELECT id, request_text, user_id, created_at, updated_at
 		FROM requests
@@ -80,9 +95,9 @@ func (r *Repository) GetByUserID(ctx context.Context, userID int64) ([]*modelReq
 	}
 	defer rows.Close()
 
-	var results []*modelRequests.Request
+	var results []modelRequests.Request
 	for rows.Next() {
-		request := &modelRequests.Request{}
+		request := modelRequests.Request{}
 		if err := rows.Scan(
 			&request.ID,
 			&request.RequestText,

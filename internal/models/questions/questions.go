@@ -18,3 +18,13 @@ type QuestionInput struct {
 	UserID    int64  `json:"user_id" db:"user_id"`
 	Level     string `json:"level" db:"level"`
 }
+
+type QuestionResponse struct {
+	Text  string `json:"text"`
+	Topic string `json:"topic"`
+	Level string `json:"level"`
+}
+
+type QuestionsResponse struct {
+	Questions []QuestionResponse `json:"questions"`
+}

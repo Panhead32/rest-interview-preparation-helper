@@ -2,7 +2,8 @@ package openai
 
 import (
 	"context"
-	"encoding/json"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"interview-project/internal/config"
 
@@ -29,22 +30,22 @@ func (c *Client) getClient() *openai.Client {
 	return c.client
 }
 
-func (c *Client) GetResponse(prompt string) (error, []string) {
+func (c *Client) GetResponse(ctx context.Context, prompt string) (error, string) {
 
-	resp, err := c.getClient().Responses.New(context.TODO(), responses.ResponseNewParams{
-		Model: openai.ChatModelGPT5Nano,
-		Input: responses.ResponseNewParamsInputUnion{OfString: openai.String(prompt)},
-		// PromptCacheKey: openai.String("test-prompt-cache-key"),
+	hashedPrompt := sha256.New()
+	hashedPrompt.Write([]byte(prompt))
+	hash := hex.EncodeToString(hashedPrompt.Sum(nil))
+
+	resp, err := c.getClient().Responses.New(ctx, responses.ResponseNewParams{
+		Model:          openai.ChatModelGPT5Nano,
+		Input:          responses.ResponseNewParamsInputUnion{OfString: openai.String(prompt)},
+		PromptCacheKey: openai.String(hash),
 	})
+
 	if err != nil {
 		fmt.Printf("Error creating response: %v\n", err)
-		return err, nil
+		return err, ""
 	}
 
-	var questions []string
-	if err := json.Unmarshal([]byte(resp.OutputText()), &questions); err != nil {
-		fmt.Printf("Error parsing JSON response: %v\n", err)
-		return err, nil
-	}
-	return nil, questions
+	return nil, resp.OutputText()
 }
